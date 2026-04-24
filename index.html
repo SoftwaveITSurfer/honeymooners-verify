@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Verifying...</title></head>
+<body>
+<p>Verifying your email, please wait...</p>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('userId');
+  const secret = params.get('secret');
+
+  fetch('https://fra.cloud.appwrite.io/v1/account/verification', {
+    method: 'PUT',
+    headers: { 
+      'Content-Type': 'application/json',
+      'X-Appwrite-Project': '69a44bc900211b3351b5'
+    },
+    body: JSON.stringify({ userId, secret })
+  })
+  .then(() => {
+    document.body.innerHTML = '<h2>✅ Email verified! You can return to the app.</h2>';
+  })
+  .catch(() => {
+    document.body.innerHTML = '<h2>❌ Verification failed. Please try again.</h2>';
+  });
+</script>
+</body>
+</html>
