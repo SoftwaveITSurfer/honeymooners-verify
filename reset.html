@@ -1,13 +1,163 @@
 <!DOCTYPE html>
 <html>
-<head><title>Redirecting...</title></head>
+<head>
+  <title>Password Recovery - Honeymooners</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5e6d3 0%, #ede0d3 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 60px 40px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .status-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success svg {
+      width: 100%;
+      height: 100%;
+      animation: slideIn 0.5s ease-out;
+      stroke: #22c55e;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f0f0f0;
+      border-top-color: #d084a8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .status-message {
+      color: #333;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: #d084a8;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #b66b8e;
+    }
+
+    .redirect-text {
+      font-size: 16px;
+      color: #666;
+      margin-top: 20px;
+    }
+  </style>
+</head>
 <body>
-<p>Redirecting to Honeymooners app...</p>
+<div class="container">
+  <h1>Honeymooners</h1>
+  <p class="subtitle">Password Recovery</p>
+
+  <div id="content">
+    <div class="loading-spinner"></div>
+    <p class="status-message">Redirecting to app...</p>
+  </div>
+</div>
+
 <script>
   const params = new URLSearchParams(window.location.search);
   const userId = params.get('userId');
   const secret = params.get('secret');
-  window.location.href = `honeymooners://reset-password?userId=${userId}&secret=${secret}`;
+
+  if (!userId || !secret) {
+    document.getElementById('content').innerHTML = `
+      <div class="status-icon error">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="8" y1="8" x2="16" y2="16"></line>
+          <line x1="16" y1="8" x2="8" y2="16"></line>
+        </svg>
+      </div>
+      <p class="status-message error">Invalid Link</p>
+      <p class="subtitle">Missing recovery parameters.</p>
+    `;
+  } else {
+    setTimeout(() => {
+      window.location.href = `honeymooners://reset-password?userId=${encodeURIComponent(userId)}&secret=${encodeURIComponent(secret)}`;
+    }, 2000);
+
+    document.getElementById('content').innerHTML = `
+      <div class="status-icon success">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M8 12.5l3 3 6-7"></path>
+        </svg>
+      </div>
+      <p class="status-message">Link is valid!</p>
+      <p class="redirect-text">Opening Honeymooners app in 2 seconds...</p>
+    `;
+  }
 </script>
 </body>
 </html>
