@@ -148,39 +148,47 @@
     `;
   } else {
     fetch('https://fra.cloud.appwrite.io/v1/account/verification', {
-    method: 'PUT',
-    headers: { 
-      'Content-Type': 'application/json',
-      'X-Appwrite-Project': '69a44bc900211b3351b5'
-    },
-    body: JSON.stringify({ userId, secret })
-  })
-  .then(() => {
-    document.getElementById('content').innerHTML = `
-      <div class="status-icon success">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M8 12.5l3 3 6-7"></path>
-        </svg>
-      </div>
-      <p class="status-message">Email verified successfully!</p>
-      <p class="subtitle" style="margin-top: 12px;">You can now return to the app.</p>
-      <a href="/" class="back-link">Return to App →</a>
-    `;
-  })
-  .catch(() => {
-    document.getElementById('content').innerHTML = `
-      <div class="status-icon error">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="8" y1="8" x2="16" y2="16"></line>
-          <line x1="16" y1="8" x2="8" y2="16"></line>
-        </svg>
-      </div>
-      <p class="status-message error">Verification failed</p>
-      <p class="subtitle" style="margin-top: 12px;">Please try again or contact support.</p>
-    `;
-  });
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Appwrite-Project': '69a44bc900211b3351b5'
+      },
+      body: JSON.stringify({ userId, secret })
+    })
+    .then(response => {
+      if (response.ok) {
+        document.getElementById('content').innerHTML = `
+          <div class="status-icon success">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 12.5l3 3 6-7"></path>
+            </svg>
+          </div>
+          <p class="status-message">Email verified successfully!</p>
+          <p class="subtitle" style="margin-top: 12px;">Returning to app...</p>
+        `;
+
+        // Automatically redirect to the app after 2 seconds
+        setTimeout(() => {
+          window.location.href = 'honeymooners://verify';
+        }, 2000);
+      } else {
+        throw new Error('Verification failed');
+      }
+    })
+    .catch(() => {
+      document.getElementById('content').innerHTML = `
+        <div class="status-icon error">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="8" y1="8" x2="16" y2="16"></line>
+            <line x1="16" y1="8" x2="8" y2="16"></line>
+          </svg>
+        </div>
+        <p class="status-message error">Verification failed</p>
+        <p class="subtitle" style="margin-top: 12px;">Please try again or contact support.</p>
+      `;
+    });
   }
 </script>
 </body>
