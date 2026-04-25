@@ -155,12 +155,6 @@
     },
     body: JSON.stringify({ userId, secret })
   })
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error('Verification request failed');
-    }
-    return response;
-  })
   .then(() => {
     document.getElementById('content').innerHTML = `
       <div class="status-icon success">
