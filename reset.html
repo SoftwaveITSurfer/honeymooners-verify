@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Redirecting...</title></head>
+<body>
+<p>Redirecting to Honeymooners app...</p>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('userId');
+  const secret = params.get('secret');
+  window.location.href = `honeymooners://reset-password?userId=${userId}&secret=${secret}`;
+</script>
+</body>
+</html>
