@@ -103,18 +103,21 @@
       to { transform: rotate(360deg); }
     }
 
-    .back-link {
+    .open-app-btn {
       display: inline-block;
       margin-top: 24px;
-      color: #d084a8;
+      padding: 12px 28px;
+      background: #d084a8;
+      color: #fff;
       text-decoration: none;
       font-size: 14px;
       font-weight: 600;
-      transition: color 0.3s ease;
+      border-radius: 999px;
+      transition: background 0.3s ease;
     }
 
-    .back-link:hover {
-      color: #b66b8e;
+    .open-app-btn:hover {
+      background: #b66b8e;
     }
   </style>
 </head>
@@ -122,10 +125,10 @@
 <div class="container">
   <h1>Honeymooners</h1>
   <p class="subtitle">Verifying your email...</p>
-  
+
   <div id="content">
     <div class="loading-spinner"></div>
-    <p class="status-message">Please wait while we verify your email.</p>
+    <p class="status-message">Opening the Honeymooners app...</p>
   </div>
 </div>
 
@@ -147,48 +150,25 @@
       <p class="subtitle" style="margin-top: 12px;">Missing verification parameters.</p>
     `;
   } else {
-    fetch('https://fra.cloud.appwrite.io/v1/account/verification', {
-      method: 'PUT',
-      headers: { 
-        'Content-Type': 'application/json',
-        'X-Appwrite-Project': '69a44bc900211b3351b5'
-      },
-      body: JSON.stringify({ userId, secret })
-    })
-    .then(response => {
-      if (response.ok) {
-        document.getElementById('content').innerHTML = `
-          <div class="status-icon success">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M8 12.5l3 3 6-7"></path>
-            </svg>
-          </div>
-          <p class="status-message">Email verified successfully!</p>
-          <p class="subtitle" style="margin-top: 12px;">Returning to app...</p>
-        `;
+    const appUrl = `honeymooners://verify?userId=${encodeURIComponent(userId)}&secret=${encodeURIComponent(secret)}`;
 
-        // Automatically redirect to the app after 2 seconds
-        setTimeout(() => {
-          window.location.href = 'honeymooners://verify';
-        }, 2000);
-      } else {
-        throw new Error('Verification failed');
-      }
-    })
-    .catch(() => {
+    // Try to open the app immediately.
+    window.location.href = appUrl;
+
+    // If the app didn't take over within ~2.5s, show a manual fallback.
+    setTimeout(() => {
       document.getElementById('content').innerHTML = `
-        <div class="status-icon error">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+        <div class="status-icon success">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
-            <line x1="8" y1="8" x2="16" y2="16"></line>
-            <line x1="16" y1="8" x2="8" y2="16"></line>
+            <path d="M8 12.5l3 3 6-7"></path>
           </svg>
         </div>
-        <p class="status-message error">Verification failed</p>
-        <p class="subtitle" style="margin-top: 12px;">Please try again or contact support.</p>
+        <p class="status-message">Almost there!</p>
+        <p class="subtitle" style="margin-top: 12px;">If the app didn't open automatically, tap below.</p>
+        <a class="open-app-btn" href="${appUrl}">Open Honeymooners</a>
       `;
-    });
+    }, 2500);
   }
 </script>
 </body>
