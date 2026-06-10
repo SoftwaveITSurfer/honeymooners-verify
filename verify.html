@@ -151,7 +151,7 @@
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json',
-        'X-Appwrite-Project': '69a444730032e7d97cc5'
+        'X-Appwrite-Project': '69a44bc900211b3351b5'
       },
       body: JSON.stringify({ userId, secret })
     })
@@ -173,10 +173,10 @@
           window.location.href = 'honeymooners://verify';
         }, 2000);
       } else {
-        return response.json().then(err => { throw new Error(err.message); });
+        throw new Error('Verification failed');
       }
     })
-    .catch(err => {
+    .catch(() => {
       document.getElementById('content').innerHTML = `
         <div class="status-icon error">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
