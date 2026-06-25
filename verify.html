@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Verifying...</title>
+  <title>Verify Email</title>
   <style>
     * {
       margin: 0;
@@ -103,6 +103,36 @@
       to { transform: rotate(360deg); }
     }
 
+    .verify-btn {
+      display: inline-block;
+      margin-top: 32px;
+      padding: 16px 40px;
+      background: #d084a8;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .verify-btn:hover {
+      background: #b66b8e;
+      transform: translateY(-1px);
+    }
+
+    .verify-btn:active {
+      transform: translateY(0);
+    }
+
+    .verify-btn:disabled {
+      background: #e0b8cc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .back-link {
       display: inline-block;
       margin-top: 24px;
@@ -121,11 +151,10 @@
 <body>
 <div class="container">
   <h1>Honeymooners</h1>
-  <p class="subtitle">Verifying your email...</p>
-  
+  <p class="subtitle">Email Verification</p>
+
   <div id="content">
-    <div class="loading-spinner"></div>
-    <p class="status-message">Please wait while we verify your email.</p>
+    <!-- Content is set by JS based on URL params -->
   </div>
 </div>
 
@@ -134,8 +163,10 @@
   const userId = params.get('userId');
   const secret = params.get('secret');
 
+  const contentEl = document.getElementById('content');
+
   if (!userId || !secret) {
-    document.getElementById('content').innerHTML = `
+    contentEl.innerHTML = `
       <div class="status-icon error">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
@@ -143,13 +174,24 @@
           <line x1="16" y1="8" x2="8" y2="16"></line>
         </svg>
       </div>
-      <p class="status-message error">Verification failed</p>
-      <p class="subtitle" style="margin-top: 12px;">Missing verification parameters.</p>
+      <p class="status-message error">Invalid verification link</p>
+      <p class="subtitle" style="margin-top: 12px;">This link is missing required parameters. Please use the link sent to your email.</p>
     `;
   } else {
+    contentEl.innerHTML = `
+      <p class="status-message">Tap the button below to verify your email address.</p>
+      <button class="verify-btn" id="verifyBtn" onclick="verifyEmail()">Verify My Email</button>
+    `;
+  }
+
+  function verifyEmail() {
+    const btn = document.getElementById('verifyBtn');
+    btn.disabled = true;
+    btn.textContent = 'Verifying...';
+
     fetch('https://fra.cloud.appwrite.io/v1/account/verification', {
       method: 'PUT',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'X-Appwrite-Project': '69a44bc900211b3351b5'
       },
@@ -157,27 +199,25 @@
     })
     .then(response => {
       if (response.ok) {
-        document.getElementById('content').innerHTML = `
+        contentEl.innerHTML = `
           <div class="status-icon success">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M8 12.5l3 3 6-7"></path>
             </svg>
           </div>
-          <p class="status-message">Email verified successfully!</p>
-          <p class="subtitle" style="margin-top: 12px;">Returning to app...</p>
+          <p class="status-message">Email verified!</p>
+          <p class="subtitle" style="margin-top: 12px;">Returning to the app...</p>
         `;
-
-        // Automatically redirect to the app after 2 seconds
         setTimeout(() => {
           window.location.href = 'honeymooners://verify';
-        }, 2000);
+        }, 1500);
       } else {
         throw new Error('Verification failed');
       }
     })
     .catch(() => {
-      document.getElementById('content').innerHTML = `
+      contentEl.innerHTML = `
         <div class="status-icon error">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
@@ -186,7 +226,7 @@
           </svg>
         </div>
         <p class="status-message error">Verification failed</p>
-        <p class="subtitle" style="margin-top: 12px;">Please try again or contact support.</p>
+        <p class="subtitle" style="margin-top: 12px;">The link may have expired or already been used. Please request a new verification email.</p>
       `;
     });
   }
